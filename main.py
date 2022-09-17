@@ -1,4 +1,10 @@
 #!/usr/bin/python
+import os
+import requests
+import json
+from datetime import datetime, timedelta
+from bs4 import BeautifulSoup as bf
+
 
 def get_table_header(soup):
     ret = {}
@@ -58,18 +64,9 @@ def get_result(soup):
     return result
 
 if __name__ == '__main__':
-    import os
-    import requests
-    import json
-    from datetime import datetime, timedelta
-    from bs4 import BeautifulSoup as bf
-
     header = {"User-Agent" :"Mozilla/5.0 (X11; Linux x86_64; rv:93.0) Gecko/20100101 Firefox/93.0"}
-    start_date = raw_input('start date:' )
-    print('examle: 2021-01-31')
-
-    end_date = raw_input('end date:' )
-    print('examle: 2021-01-31')
+    start_date = '2021-1-1'
+    end_date = '2021-1-10'
 
     ys, ms, ds = start_date.split('-')
     ye, me, de = end_date.split('-')
@@ -78,11 +75,11 @@ if __name__ == '__main__':
 
     date = until - start
     result = {}
-    for x in range(date.days):
-        d = '%s-%s-%s' % % (until.year, until.month, x)
-        header['cookie'] = 'cal-custom-range=%s 00:00|$%s 23:59; cal-timezone-offset=420; TEServer=TEIIS3;' % d
+    for x in range(1, date.days + 1):
+        d = '%s-%s-%s' % (until.year, until.month, x)
+        header['cookie'] = 'cal-custom-range={0} 00:00|{0} 23:59; cal-timezone-offset=420; TEServer=TEIIS3;'.format(d)
         r = requests.get('https://tradingeconomics.com/calendar', headers=header)
         soup = bf(r.text, 'html.parser')
         result[d] = get_data(soup)
 
-    print result
+    print(result)
